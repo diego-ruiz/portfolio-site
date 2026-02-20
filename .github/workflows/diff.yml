@@ -1,0 +1,64 @@
+name: CDK Diff
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  diff:
+    name: CDK Diff
+    runs-on: ubuntu-latest
+    environment: nonprod
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── Frontend build ──────────────────────────────────────────────────────
+      # CDK bundles website/dist as an S3 asset during synth, so the folder
+      # must exist before running any CDK command.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: website
+        run: npm run build
+
+      # ── CDK (Python) ────────────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install AWS CDK CLI
+        run: npm install -g aws-cdk
+
+      # ── AWS credentials ─────────────────────────────────────────────────────
+      # Requires repository secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+      # and AWS_REGION (e.g. us-east-1).
+      # For OIDC (recommended for production), replace this step with
+      # role-to-assume and remove the key/secret secrets.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: CDK Diff
+        run: cdk diff
