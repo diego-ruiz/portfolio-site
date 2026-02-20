@@ -2,6 +2,28 @@
 
 A personal portfolio site built with **React + Vite + Tailwind CSS**, deployed to **AWS S3 + CloudFront** via **AWS CDK (Python)**.
 
+## Architecure
+
+```mermaid
+flowchart TD
+    User(["👤 User"])
+
+    subgraph AWS ["AWS — us-east-1"]
+        CF["☁️ CloudFront Distribution\nHTTPS · OAC · SPA error pages"]
+        OAC["Origin Access Control"]
+        S3["🪣 S3 Bucket\nPrivate · website/dist"]
+    end
+
+    User -->|"HTTPS request"| CF
+    CF -->|"Authenticated fetch via OAC"| OAC
+    OAC --> S3
+
+    style AWS fill:#232f3e,color:#fff,stroke:#527FFF
+    style CF fill:#527FFF,color:#fff,stroke:none
+    style OAC fill:#527FFF,color:#fff,stroke:none
+    style S3 fill:#3F8624,color:#fff,stroke:none
+```
+
 ## Project Structure
 
 ```
