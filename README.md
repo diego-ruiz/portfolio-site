@@ -18,10 +18,10 @@ flowchart TD
     CF -->|"Authenticated fetch via OAC"| OAC
     OAC --> S3
 
-    style AWS fill:#232f3e,color:#fff,stroke:#527FFF
-    style CF fill:#527FFF,color:#fff,stroke:none
-    style OAC fill:#527FFF,color:#fff,stroke:none
-    style S3 fill:#3F8624,color:#fff,stroke:none
+    style AWS fill:#f0f4ff,color:#0d1117,stroke:#527FFF
+    style CF fill:#dce8ff,color:#0d1117,stroke:#527FFF
+    style OAC fill:#dce8ff,color:#0d1117,stroke:#527FFF
+    style S3 fill:#d4edda,color:#0d1117,stroke:#3F8624
 ```
 
 ## Project Structure
